@@ -24,12 +24,8 @@ class Cupcake(db.Model):
     flavor = db.Column(db.Text, nullable=False)
     size = db.Column(db.Text, nullable=False)
     rating = db.Column(db.Integer, nullable=False)
-    image_url = db.Column(db.Text, nullable=False, default='')
+    image_url = db.Column(db.Text, nullable=False, default=DEFAULT_IMAGE)
 
-    def image_url(self):
-        """Return image for cupcake -- bespoke or default."""
-
-        return self.image_url or DEFAULT_IMAGE
 
     def serialize(self):
         """Serialize to dictionary."""

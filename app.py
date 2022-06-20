@@ -24,8 +24,8 @@ db.create_all()
 #toolbar = DebugToolbarExtension(app)
 
 @app.get('/api/cupcakes')
-def list_all_cupckakes():
-    """return JSON {'cupakes': [{id, flavor, size, rating, image_url}, ...]}"""
+def list_all_cupcakes():
+    """return JSON {'cupcakes': [{id, flavor, size, rating, image_url}, ...]}"""
 
     cupcakes = Cupcake.query.all()
     serialized = [c.serialize() for c in cupcakes]
@@ -34,7 +34,7 @@ def list_all_cupckakes():
 
 @app.get('/api/cupcakes/<int:cupcake_id>')
 def list_single_cupcake(cupcake_id):
-    """return JSON {'cupake': [{id, flavor, size, rating, image_url}"""
+    """return JSON {'cupcake': [{id, flavor, size, rating, image_url}"""
 
     cupcake = Cupcake.query.get_or_404(cupcake_id)
     serialized = cupcake.serialize()
@@ -43,12 +43,12 @@ def list_single_cupcake(cupcake_id):
 
 @app.post('/api/cupcakes')
 def create_new_cupcake():
-    """return JSON for new cupcake {'cupake': [{id, flavor, size, rating, image_url}"""
+    """return JSON for new cupcake {'cupcake': [{id, flavor, size, rating, image_url}"""
 
     flavor = request.json['flavor']
     size = request.json['size']
     rating = request.json['rating']
-    image_url = request.json['image_url']
+    image_url = request.json['image_url'] or None
 
     new_cupcake = Cupcake(
                         flavor=flavor,
@@ -62,3 +62,36 @@ def create_new_cupcake():
     serialized = new_cupcake.serialize()
 
     return (jsonify(cupcake=serialized), 201)
+
+@app.patch('/api/cupcakes/<int:cupcake_id>')
+def update_capcake(cupcake_id):
+    """ this updates cupcake and returns JSON for one
+        cupcake with the updated info
+        example: {'cupcake': [{id, flavor, size, rating, image_url} """
+
+    cupcake = Cupcake.query.get_or_404(cupcake_id)
+
+    cupcake.flavor = request.json['flavor'] or cupcake.flavor
+    cupcake.size = request.json['size'] or cupcake.size
+    cupcake.rating = request.json['rating'] or cupcake.rating
+    cupcake.image_url = request.json['image_url'] or cupcake.image_url
+
+    db.session.commit()
+
+    serialized = cupcake.serialize()
+
+    return jsonify(cupcake=serialized)
+
+@app.delete('/api/cupcakes/<int:cupcake_id>')
+def delete_cupcake(cupcake_id):
+    """ deletes a cupcake form the data base returns
+    JSON with the id of the deleted cupcake
+    example : {deleted: [cupcake-id]}  """
+
+    # cupcake = Cupcake.query.get_or_404(cupcake_id)
+
+    db.session.query(Cupcake).filter(Cupcake.id==cupcake_id).delete()
+
+    db.session.commit()
+
+    return jsonify({"deleted": cupcake_id})
