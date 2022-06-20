@@ -71,10 +71,16 @@ def update_capcake(cupcake_id):
 
     cupcake = Cupcake.query.get_or_404(cupcake_id)
 
-    cupcake.flavor = request.json['flavor'] or cupcake.flavor
-    cupcake.size = request.json['size'] or cupcake.size
-    cupcake.rating = request.json['rating'] or cupcake.rating
-    cupcake.image_url = request.json['image_url'] or cupcake.image_url
+    if request.json.get('flavor'):
+        cupcake.flavor = request.json['flavor']
+    if request.json.get('size'):
+        cupcake.size = request.json['size']
+    if request.json.get('rating'):
+        cupcake.rating = request.json['rating']
+    if request.json.get('image_url'):
+        cupcake.image_url = request.json['image_url']
+
+    #cupcake.flavor = request.json.get('flavor', cupcake.flavor)
 
     db.session.commit()
 
@@ -88,10 +94,14 @@ def delete_cupcake(cupcake_id):
     JSON with the id of the deleted cupcake
     example : {deleted: [cupcake-id]}  """
 
-    # cupcake = Cupcake.query.get_or_404(cupcake_id)
-
-    db.session.query(Cupcake).filter(Cupcake.id==cupcake_id).delete()
+    cupcake = Cupcake.query.get_or_404(cupcake_id)
+    db.session.delete(cupcake)
+    #db.session.query(Cupcake).filter(Cupcake.id==cupcake_id).delete()
 
     db.session.commit()
 
     return jsonify({"deleted": cupcake_id})
+
+
+    ## for key in request.json
+        ## cupcake[key] = request.json[key]
