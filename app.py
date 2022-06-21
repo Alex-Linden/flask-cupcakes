@@ -1,6 +1,5 @@
 """Flask app for Cupcakes"""
-from flask import Flask, jsonify, request
-#url_for, render_template, redirect, flash
+from flask import Flask, jsonify, request, url_for, render_template, redirect, flash
 
 #from flask_debugtoolbar import DebugToolbarExtension
 
@@ -22,6 +21,12 @@ db.create_all()
 # app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 #toolbar = DebugToolbarExtension(app)
+
+@app.get('/')
+def render_homepage():
+
+    return render_template('index.html')
+
 
 @app.get('/api/cupcakes')
 def list_all_cupcakes():
